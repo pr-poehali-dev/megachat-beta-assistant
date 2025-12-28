@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,39 +6,39 @@
 
 @layer base {
   :root {
-    --background: 210 20% 8%;
-    --foreground: 120 100% 70%;
+    --background: 220 15% 8%;
+    --foreground: 210 20% 98%;
 
-    --card: 215 25% 10%;
-    --card-foreground: 120 100% 70%;
+    --card: 220 15% 12%;
+    --card-foreground: 210 20% 98%;
 
-    --popover: 215 25% 10%;
-    --popover-foreground: 120 100% 70%;
+    --popover: 220 15% 12%;
+    --popover-foreground: 210 20% 98%;
 
-    --primary: 120 100% 50%;
-    --primary-foreground: 210 20% 8%;
+    --primary: 346 77% 50%;
+    --primary-foreground: 210 20% 98%;
 
-    --secondary: 215 25% 15%;
-    --secondary-foreground: 120 100% 70%;
+    --secondary: 220 15% 18%;
+    --secondary-foreground: 210 20% 98%;
 
-    --muted: 215 20% 18%;
-    --muted-foreground: 120 60% 50%;
+    --muted: 220 15% 20%;
+    --muted-foreground: 220 10% 60%;
 
-    --accent: 120 100% 50%;
-    --accent-foreground: 210 20% 8%;
+    --accent: 142 71% 45%;
+    --accent-foreground: 210 20% 98%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 120 40% 25%;
-    --input: 215 25% 15%;
-    --ring: 120 100% 50%;
+    --border: 220 15% 20%;
+    --input: 220 15% 16%;
+    --ring: 346 77% 50%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --neon-green: 120 100% 50%;
-    --dark-bg: 210 20% 8%;
-    --card-bg: 215 25% 10%;
+    --christmas-red: 346 77% 50%;
+    --christmas-green: 142 71% 45%;
+    --christmas-gold: 45 93% 47%;
   }
 }
 
@@ -49,27 +49,38 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: "Roboto Mono", monospace;
+    font-family:
+      "Inter",
+      -apple-system,
+      BlinkMacSystemFont,
+      system-ui,
+      sans-serif;
   }
 }
 
 @layer utilities {
-  .neon-glow {
-    box-shadow:
-      0 0 5px theme("colors.accent.DEFAULT"),
-      0 0 10px theme("colors.accent.DEFAULT"),
-      0 0 20px theme("colors.accent.DEFAULT");
-  }
-
-  .neon-text {
-    text-shadow:
-      0 0 5px theme("colors.accent.DEFAULT"),
-      0 0 10px theme("colors.accent.DEFAULT");
-  }
-
   .glass-card {
-    background: rgba(26, 31, 44, 0.6);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 255, 65, 0.2);
+    background: rgba(28, 32, 43, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .snowflake {
+    position: fixed;
+    top: -10px;
+    z-index: 9999;
+    user-select: none;
+    pointer-events: none;
+    animation: fall linear infinite;
+  }
+
+  @keyframes fall {
+    to {
+      transform: translateY(100vh);
+    }
+  }
+
+  .christmas-glow {
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
   }
 }
