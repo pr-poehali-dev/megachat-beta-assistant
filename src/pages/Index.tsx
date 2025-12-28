@@ -26,32 +26,31 @@ interface Review {
   status: 'pending' | 'approved' | 'rejected';
 }
 
-const Snowflakes = () => {
-  const snowflakes = Array.from({ length: 50 }, (_, i) => ({
+const ChristmasLights = () => {
+  const lights = Array.from({ length: 30 }, (_, i) => ({
     id: i,
-    left: Math.random() * 100,
-    animationDuration: 10 + Math.random() * 20,
-    opacity: 0.3 + Math.random() * 0.7,
-    fontSize: 10 + Math.random() * 20,
+    color: i % 4 === 0 ? 'bg-red-500' : i % 4 === 1 ? 'bg-green-500' : i % 4 === 2 ? 'bg-yellow-400' : 'bg-blue-500',
+    delay: i * 0.1,
   }));
 
   return (
-    <>
-      {snowflakes.map((flake) => (
+    <div className="fixed top-0 left-0 right-0 z-50 flex justify-around py-2 bg-gradient-to-b from-black/30 to-transparent">
+      {lights.map((light) => (
         <div
-          key={flake.id}
-          className="snowflake"
-          style={{
-            left: `${flake.left}%`,
-            animationDuration: `${flake.animationDuration}s`,
-            opacity: flake.opacity,
-            fontSize: `${flake.fontSize}px`,
-          }}
-        >
-          ❄️
-        </div>
+          key={light.id}
+          className={`w-3 h-3 rounded-full ${light.color} light`}
+          style={{ animationDelay: `${light.delay}s` }}
+        />
       ))}
-    </>
+    </div>
+  );
+};
+
+const ChristmasTree = () => {
+  return (
+    <div className="fixed bottom-4 right-4 z-40 tree">
+      <div className="text-7xl">🎄</div>
+    </div>
   );
 };
 
@@ -60,7 +59,7 @@ const Index = () => {
     {
       id: '1',
       role: 'assistant',
-      content: '🎄 Привет! Я MegaChat.BETA — ваш AI-помощник. Могу ответить на вопросы, поиграть в города или просто поболтать. С наступающим Новым Годом! Чем могу помочь?',
+      content: '🎄 Привет! Я MegaChat.BETA — ваш AI-помощник. Могу ответить на любые вопросы. С наступающим Новым Годом! Чем могу помочь?',
       timestamp: new Date(),
     },
   ]);
@@ -107,22 +106,20 @@ const Index = () => {
         setMessages((prev) => [...prev, newMessage]);
         setIsTyping(false);
         resolve();
-      }, 1000 + Math.random() * 1000);
+      }, 800 + Math.random() * 600);
     });
   };
 
   const getAIResponse = async (userMessage: string): Promise<string> => {
     try {
-      const response = await fetch('https://api.cohere.ai/v1/generate', {
+      const response = await fetch('https://functions.poehali.dev/075097f1-1352-42e7-a4e9-704ff3170d72', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          prompt: `Ты дружелюбный AI-помощник MegaChat.BETA. Отвечай на русском языке кратко и по делу. Добавь немного новогоднего настроения в ответ.\n\nВопрос пользователя: ${userMessage}\n\nОтвет:`,
-          max_tokens: 200,
-          temperature: 0.7,
-          model: 'command',
+          message: userMessage,
+          timestamp: new Date().toISOString(),
         }),
       });
 
@@ -131,31 +128,9 @@ const Index = () => {
       }
 
       const data = await response.json();
-      return data.generations[0].text.trim();
+      return data.reply || 'Не удалось получить ответ';
     } catch (error) {
-      const lowerMessage = userMessage.toLowerCase();
-
-      if (lowerMessage.includes('город') && lowerMessage.includes('игра')) {
-        return '🎅 Отлично! Давай сыграем в города. Я начну: Москва. Твой ход — город на букву "А"!';
-      }
-
-      if (lowerMessage.includes('погод')) {
-        return '☃️ Зимняя погода — самое время для горячего чая и уютных разговоров! Надеюсь, у вас хорошая погода.';
-      }
-
-      if (lowerMessage.includes('как дела') || lowerMessage.includes('привет')) {
-        return '🎄 У меня всё отлично! Готов помочь вам с любыми вопросами. Что вас интересует?';
-      }
-
-      if (lowerMessage.includes('что ты умеешь')) {
-        return '🎁 Я умею отвечать на вопросы, играть в города, поддерживать диалог и создавать новогоднее настроение! Есть голосовой режим — нажми на микрофон.';
-      }
-
-      if (lowerMessage.includes('новый год') || lowerMessage.includes('новогодн')) {
-        return '🎉 С наступающим Новым Годом! Пусть он принесёт много радости, здоровья и исполнения желаний! ✨';
-      }
-
-      return '🎄 Интересный вопрос! Я постараюсь ответить лучше, когда подключусь к более продвинутым AI-моделям. А пока могу поболтать на простые темы!';
+      return '⚠️ AI временно недоступен. Попробуйте позже или обратитесь на MegaSchoolChat@gmail.com';
     }
   };
 
@@ -209,6 +184,25 @@ const Index = () => {
   const handleSubmitReview = () => {
     if (!reviewForm.name.trim() || !reviewForm.comment.trim()) {
       toast.error('Заполните все поля');
+      return;
+    }
+
+    const lowerName = reviewForm.name.toLowerCase();
+    const lowerComment = reviewForm.comment.toLowerCase();
+    
+    const badWords = ['админ', 'admin', 'модератор', 'moderator'];
+    const hasBadName = badWords.some(word => lowerName.includes(word));
+    
+    const profanityWords = ['мат', 'оскорбление', 'дурак', 'идиот'];
+    const hasProfanity = profanityWords.some(word => lowerComment.includes(word));
+
+    if (hasBadName) {
+      toast.error('❌ Нельзя использовать никнейм "Админ" или похожие');
+      return;
+    }
+
+    if (hasProfanity) {
+      toast.error('❌ Запрещены мат и оскорбления в отзывах');
       return;
     }
 
@@ -273,14 +267,15 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#111827] via-[#1f2937] to-[#0f172a] text-foreground relative overflow-hidden">
-      <Snowflakes />
+    <div className="min-h-screen bg-gradient-to-br from-[#0a1f0f] via-[#0d2818] to-[#061508] text-foreground relative overflow-hidden">
+      <ChristmasLights />
+      <ChristmasTree />
       
-      <div className="container mx-auto px-4 py-6 max-w-7xl relative z-10">
+      <div className="container mx-auto px-4 py-16 max-w-7xl relative z-10">
         <header className="mb-8 text-center">
           <div className="flex items-center justify-center gap-3 mb-2">
             <span className="text-4xl">🎄</span>
-            <h1 className="text-5xl font-bold">
+            <h1 className="text-5xl font-bold glow-text">
               MegaChat<span className="text-primary">.BETA</span>
             </h1>
             <span className="text-4xl">🎁</span>
@@ -291,7 +286,7 @@ const Index = () => {
         </header>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-6 bg-card/50 border border-border">
+          <TabsList className="grid w-full grid-cols-3 mb-6 glass-card">
             <TabsTrigger value="chat" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
               <Icon name="MessageSquare" size={16} className="mr-2" />
               Чат
@@ -300,8 +295,12 @@ const Index = () => {
               <Icon name="Star" size={16} className="mr-2" />
               Отзывы
             </TabsTrigger>
+            <TabsTrigger value="rules" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+              <Icon name="BookOpen" size={16} className="mr-2" />
+              Правила
+            </TabsTrigger>
             {isAdminAuthenticated && (
-              <TabsTrigger value="admin" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground col-span-2">
+              <TabsTrigger value="admin" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground col-span-3">
                 <Icon name="Shield" size={16} className="mr-2" />
                 Админ-панель
               </TabsTrigger>
@@ -309,7 +308,7 @@ const Index = () => {
           </TabsList>
 
           <TabsContent value="chat" className="space-y-4">
-            <Card className="glass-card overflow-hidden">
+            <Card className="glass-card overflow-hidden glow-border">
               <ScrollArea className="h-[500px] p-4">
                 <div className="space-y-4">
                   {messages.map((message) => (
@@ -385,8 +384,8 @@ const Index = () => {
           </TabsContent>
 
           <TabsContent value="reviews" className="space-y-6">
-            <Card className="glass-card p-6">
-              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+            <Card className="glass-card glow-border p-6">
+              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 glow-text">
                 <span>🎅</span> Оставить отзыв
               </h2>
               <div className="space-y-4">
@@ -440,8 +439,8 @@ const Index = () => {
               </div>
             </Card>
 
-            <Card className="glass-card p-6">
-              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+            <Card className="glass-card glow-border p-6">
+              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 glow-text">
                 <span>⭐</span> Отзывы пользователей
               </h2>
               <ScrollArea className="h-[400px]">
@@ -487,33 +486,105 @@ const Index = () => {
             </Card>
           </TabsContent>
 
+          <TabsContent value="rules" className="space-y-6">
+            <Card className="glass-card glow-border p-6">
+              <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 glow-text">
+                <span>📜</span> Пользовательское соглашение
+              </h2>
+              <div className="space-y-4 text-sm">
+                <div>
+                  <h3 className="text-lg font-semibold text-primary mb-2">❌ Запрещено:</h3>
+                  <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                    <li>Использовать мат и нецензурные выражения</li>
+                    <li>Оскорблять других пользователей</li>
+                    <li>Выдавать себя за администрацию (никнейм "Админ", "Admin" и похожие)</li>
+                    <li>Размещать спам и рекламу</li>
+                    <li>Публиковать личную информацию других людей</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-semibold text-primary mb-2">✅ Разрешено:</h3>
+                  <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                    <li>Задавать любые вопросы AI-помощнику</li>
+                    <li>Оставлять честные отзывы</li>
+                    <li>Общаться вежливо и уважительно</li>
+                    <li>Делиться опытом использования сервиса</li>
+                  </ul>
+                </div>
+
+                <div className="border-t border-border/50 pt-4">
+                  <h3 className="text-lg font-semibold text-primary mb-2">📧 Контакты:</h3>
+                  <p className="text-muted-foreground mb-2">
+                    Email: <a href="mailto:MegaSchoolChat@gmail.com" className="text-primary hover:underline">MegaSchoolChat@gmail.com</a>
+                  </p>
+                  <p className="text-muted-foreground mb-2">
+                    Инфо-портал: <a href="https://megachat-info-portal--preview.poehali.dev/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">megachat-info-portal</a>
+                  </p>
+                  <p className="text-muted-foreground">
+                    Официальный сайт: <a href="https://ai-school-tools--preview.poehali.dev/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">ai-school-tools</a>
+                  </p>
+                </div>
+
+                <div className="border-t border-border/50 pt-4">
+                  <h3 className="text-lg font-semibold text-primary mb-3">👨‍💻 О разработчике:</h3>
+                  <div className="flex flex-col md:flex-row items-center gap-4">
+                    <img 
+                      src="https://cdn.poehali.dev/files/photo_5370601556065062292_y.jpg" 
+                      alt="Степан Петров"
+                      className="w-48 h-48 rounded-xl object-cover border-2 border-primary/50 shadow-lg"
+                    />
+                    <div>
+                      <p className="text-lg font-semibold mb-2">Степан Петров</p>
+                      <p className="text-muted-foreground mb-3">
+                        Проект создан и принадлежит талантливому:
+                      </p>
+                      <ul className="space-y-1 text-muted-foreground">
+                        <li>🎮 Майнкрафтеру</li>
+                        <li>👨‍💻 Программисту</li>
+                        <li>🎤 Певцу</li>
+                        <li>📹 Блогеру</li>
+                        <li>😁 И просто душке Стёпе!</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-xs text-muted-foreground border-t border-border/50 pt-4">
+                  <p>Используя MegaChat.BETA, вы соглашаетесь с данными правилами.</p>
+                  <p className="mt-1">При нарушении правил администрация оставляет за собой право удалять отзывы и ограничивать доступ.</p>
+                </div>
+              </div>
+            </Card>
+          </TabsContent>
+
           {isAdminAuthenticated && (
             <TabsContent value="admin" className="space-y-6">
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <Card className="glass-card p-4 text-center">
-                  <p className="text-3xl font-bold text-primary">{stats.total}</p>
+                <Card className="glass-card glow-border p-4 text-center">
+                  <p className="text-3xl font-bold text-primary glow-text">{stats.total}</p>
                   <p className="text-xs text-muted-foreground mt-1">Всего отзывов</p>
                 </Card>
-                <Card className="glass-card p-4 text-center">
-                  <p className="text-3xl font-bold text-yellow-400">{stats.pending}</p>
+                <Card className="glass-card glow-border p-4 text-center">
+                  <p className="text-3xl font-bold text-yellow-400 glow-text">{stats.pending}</p>
                   <p className="text-xs text-muted-foreground mt-1">На модерации</p>
                 </Card>
-                <Card className="glass-card p-4 text-center">
-                  <p className="text-3xl font-bold text-green-400">{stats.approved}</p>
+                <Card className="glass-card glow-border p-4 text-center">
+                  <p className="text-3xl font-bold text-green-400 glow-text">{stats.approved}</p>
                   <p className="text-xs text-muted-foreground mt-1">Одобрено</p>
                 </Card>
-                <Card className="glass-card p-4 text-center">
-                  <p className="text-3xl font-bold text-red-400">{stats.rejected}</p>
+                <Card className="glass-card glow-border p-4 text-center">
+                  <p className="text-3xl font-bold text-red-400 glow-text">{stats.rejected}</p>
                   <p className="text-xs text-muted-foreground mt-1">Отклонено</p>
                 </Card>
-                <Card className="glass-card p-4 text-center">
-                  <p className="text-3xl font-bold text-accent">{stats.avgRating}</p>
+                <Card className="glass-card glow-border p-4 text-center">
+                  <p className="text-3xl font-bold text-accent glow-text">{stats.avgRating}</p>
                   <p className="text-xs text-muted-foreground mt-1">Средняя оценка</p>
                 </Card>
               </div>
 
-              <Card className="glass-card p-6">
-                <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+              <Card className="glass-card glow-border p-6">
+                <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 glow-text">
                   <span>🎄</span> Управление отзывами
                 </h2>
                 <ScrollArea className="h-[500px]">
@@ -595,9 +666,9 @@ const Index = () => {
       </div>
 
       <Dialog open={isAdminDialogOpen} onOpenChange={setIsAdminDialogOpen}>
-        <DialogContent className="sm:max-w-md bg-card border-border">
+        <DialogContent className="sm:max-w-md glass-card glow-border">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 glow-text">
               <Icon name="Shield" size={24} className="text-primary" />
               Вход в админ-панель
             </DialogTitle>

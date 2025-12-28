@@ -1,0 +1,17 @@
+{
+  "tests": [
+    {
+      "name": "Тест вопроса к AI",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "message": "Как продать овцу?"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "reply": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

@@ -6,39 +6,35 @@
 
 @layer base {
   :root {
-    --background: 220 15% 8%;
-    --foreground: 210 20% 98%;
+    --background: 140 30% 5%;
+    --foreground: 140 20% 95%;
 
-    --card: 220 15% 12%;
-    --card-foreground: 210 20% 98%;
+    --card: 140 25% 8%;
+    --card-foreground: 140 20% 95%;
 
-    --popover: 220 15% 12%;
-    --popover-foreground: 210 20% 98%;
+    --popover: 140 25% 8%;
+    --popover-foreground: 140 20% 95%;
 
-    --primary: 346 77% 50%;
-    --primary-foreground: 210 20% 98%;
+    --primary: 142 80% 50%;
+    --primary-foreground: 140 20% 10%;
 
-    --secondary: 220 15% 18%;
-    --secondary-foreground: 210 20% 98%;
+    --secondary: 140 20% 15%;
+    --secondary-foreground: 140 20% 95%;
 
-    --muted: 220 15% 20%;
-    --muted-foreground: 220 10% 60%;
+    --muted: 140 20% 18%;
+    --muted-foreground: 140 15% 60%;
 
-    --accent: 142 71% 45%;
-    --accent-foreground: 210 20% 98%;
+    --accent: 120 100% 40%;
+    --accent-foreground: 140 20% 10%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 220 15% 20%;
-    --input: 220 15% 16%;
-    --ring: 346 77% 50%;
+    --border: 140 40% 20%;
+    --input: 140 30% 12%;
+    --ring: 142 80% 50%;
 
     --radius: 0.75rem;
-
-    --christmas-red: 346 77% 50%;
-    --christmas-green: 142 71% 45%;
-    --christmas-gold: 45 93% 47%;
   }
 }
 
@@ -60,27 +56,43 @@
 
 @layer utilities {
   .glass-card {
-    background: rgba(28, 32, 43, 0.7);
+    background: rgba(10, 30, 15, 0.8);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    box-shadow:
+      0 0 30px rgba(34, 197, 94, 0.2),
+      inset 0 0 20px rgba(34, 197, 94, 0.1);
   }
 
-  .snowflake {
-    position: fixed;
-    top: -10px;
-    z-index: 9999;
-    user-select: none;
-    pointer-events: none;
-    animation: fall linear infinite;
+  .glow-text {
+    text-shadow:
+      0 0 10px rgba(34, 197, 94, 0.8),
+      0 0 20px rgba(34, 197, 94, 0.6),
+      0 0 30px rgba(34, 197, 94, 0.4);
   }
 
-  @keyframes fall {
-    to {
-      transform: translateY(100vh);
+  .glow-border {
+    border: 2px solid rgba(34, 197, 94, 0.5);
+    box-shadow:
+      0 0 15px rgba(34, 197, 94, 0.5),
+      inset 0 0 15px rgba(34, 197, 94, 0.2);
+  }
+
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.3;
     }
   }
 
-  .christmas-glow {
-    box-shadow: 0 0 20px rgba(220, 38, 38, 0.3);
+  .light {
+    animation: twinkle 1.5s ease-in-out infinite;
+  }
+
+  .tree {
+    filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.6));
   }
 }
